@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --ink:   #0d0d0d;
+  --paper: #f5f0e8;
+  --blaze: #ff4d1c;
+  --volt:  #e8ff00;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Neobrutalism helpers ──────────────────────────────────── */
+.brutal-shadow    { box-shadow: 4px 4px 0 var(--ink); }
+.brutal-shadow-lg { box-shadow: 6px 6px 0 var(--ink); }
+.brutal-shadow-sm { box-shadow: 2px 2px 0 var(--ink); }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn-brutal {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 22px;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.9rem;
+  border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer; text-decoration: none;
+  background: var(--paper); color: var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.btn-brutal:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+.btn-brutal:active { transform: translate(2px,2px);   box-shadow: 2px 2px 0 var(--ink); }
+
+.btn-blaze { background: var(--blaze); color: var(--paper); }
+.btn-volt  { background: var(--volt);  color: var(--ink);   }
+.btn-ink   { background: var(--ink);   color: var(--paper); }
+
+/* ── Form inputs ───────────────────────────────────────────── */
+.brutal-input {
+  width: 100%; padding: 11px 14px;
+  background: var(--paper); color: var(--ink);
+  border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  font-family: 'Inter', sans-serif; font-size: 0.95rem;
+  outline: none; border-radius: 0;
+  transition: box-shadow 0.15s;
+}
+.brutal-input:focus { box-shadow: 4px 4px 0 var(--blaze); }
+.brutal-input::placeholder { color: rgba(13,13,13,0.35); }
+
+/* ── Utility ───────────────────────────────────────────────── */
+.label-brutal {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.75rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink); opacity: 0.55; margin-bottom: 8px;
+}
+
+/* ── Spin animation for loading ────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; }
+
+/* ── Fade in ───────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.45s ease-out forwards; }
