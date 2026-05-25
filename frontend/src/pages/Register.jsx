@@ -41,6 +41,7 @@ export default function Register() {
   const [showPw,   setShowPw]   = useState(false);
   const [error,    setError]    = useState('');
   const [loading,  setLoading]  = useState(false);
+  const [success,  setSuccess]  = useState(false);
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -49,7 +50,9 @@ export default function Register() {
     setLoading(true); setError('');
     try {
       await register(username, email, password);
-      navigate('/dashboard');
+      // Account created — show success banner then go to login
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(!err.response ? 'Cannot connect to server. Is the backend running?' : err.response?.data?.msg || 'Registration failed. Try again.');
     } finally { setLoading(false); }
@@ -118,6 +121,15 @@ export default function Register() {
               >
                 <AlertCircle size={16} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 1 }} />
                 {error}
+              </motion.div>
+            )}
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, background: C.volt, border: `2px solid ${C.ink}`, boxShadow: `3px 3px 0 ${C.ink}`, padding: '12px 14px', marginBottom: 24, fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: C.ink }}
+              >
+                <Check size={16} strokeWidth={3} style={{ flexShrink: 0 }} />
+                Account created! Redirecting to login…
               </motion.div>
             )}
           </AnimatePresence>

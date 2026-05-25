@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import CreatePoll from './pages/CreatePoll';
 import PollView from './pages/PollView';
 import PollResults from './pages/PollResults';
+import EditPoll from './pages/EditPoll';
 
 /* Hide the app-level Navbar on the landing page (it has its own) */
 function Layout({ children }) {
@@ -42,14 +43,15 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/"                  element={<LandingPage />} />
-          <Route path="/login"             element={!user ? <Login />         : <Navigate to="/dashboard" />} />
-          <Route path="/register"          element={!user ? <Register />      : <Navigate to="/dashboard" />} />
-          <Route path="/forgot-password"   element={<ForgotPassword />} />
-          <Route path="/dashboard"         element={user  ? <Dashboard />     : <Navigate to="/login" />} />
-          <Route path="/create"            element={user  ? <CreatePoll />    : <Navigate to="/login" />} />
-          <Route path="/poll/:id"          element={<PollView />} />
-          <Route path="/poll/:id/results"  element={<PollResults />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/create" element={user ? <CreatePoll /> : <Navigate to="/login" />} />
+          <Route path="/poll/:id" element={<PollView />} />
+          <Route path="/poll/:id/results" element={<PollResults />} />
+          <Route path="/edit/:id" element={user ? <EditPoll /> : <Navigate to="/login" />} />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
