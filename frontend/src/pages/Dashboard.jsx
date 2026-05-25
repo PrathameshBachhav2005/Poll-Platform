@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Activity, Clock, BarChart3, Plus, Copy, Check, Trash2, AlertCircle } from 'lucide-react';
+import { Activity, Clock, BarChart3, Plus, Copy, Check, Trash2, AlertCircle, Pencil } from 'lucide-react';
 
 const C = { ink: '#0d0d0d', paper: '#f5f0e8', blaze: '#ff4d1c', volt: '#e8ff00' };
 
@@ -20,9 +20,9 @@ function Reveal({ children, delay = 0 }) {
 
 function PollCard({ poll, index, onDelete }) {
   const isExpired = new Date() > new Date(poll.expiresAt);
-  const [copied,   setCopied]   = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [confirm,  setConfirm]  = useState(false);
+  const [copied,        setCopied]        = useState(false);
+  const [deleting,      setDeleting]      = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`${window.location.origin}/poll/${poll._id}`);
@@ -31,12 +31,16 @@ function PollCard({ poll, index, onDelete }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm) { setConfirm(true); return; }
+    if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
     try {
       await api.delete(`/polls/${poll._id}`);
       onDelete(poll._id);
-    } catch { setDeleting(false); setConfirm(false); }
+    } catch (err) {
+      console.error('Delete failed:', err);
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
   };
 
   return (
@@ -78,14 +82,25 @@ function PollCard({ poll, index, onDelete }) {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
-          <Link to={`/poll/${poll._id}/results`} style={{ textDecoration: 'none', flex: 1 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 'auto', flexWrap: 'wrap' }}>
+          <Link to={`/poll/${poll._id}/results`} style={{ textDecoration: 'none', flex: 1, minWidth: 100 }}>
             <motion.button
               whileHover={{ y: -2, x: -2, boxShadow: `5px 5px 0 ${C.ink}` }}
               whileTap={{ y: 1, x: 1, boxShadow: `2px 2px 0 ${C.ink}` }}
               style={{ width: '100%', fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem', background: C.blaze, color: C.paper, border: `2px solid ${C.ink}`, boxShadow: `3px 3px 0 ${C.ink}`, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}
             >
               <BarChart3 size={13} strokeWidth={2.5} /> Analytics
+            </motion.button>
+          </Link>
+
+          <Link to={`/edit/${poll._id}`} style={{ textDecoration: 'none' }}>
+            <motion.button
+              whileHover={{ y: -2, x: -2, boxShadow: `5px 5px 0 ${C.ink}` }}
+              whileTap={{ y: 1, x: 1, boxShadow: `2px 2px 0 ${C.ink}` }}
+              title="Edit poll"
+              style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem', background: C.volt, color: C.ink, border: `2px solid ${C.ink}`, boxShadow: `3px 3px 0 ${C.ink}`, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
+            >
+              <Pencil size={13} strokeWidth={2.5} /> Edit
             </motion.button>
           </Link>
 
@@ -109,8 +124,8 @@ function PollCard({ poll, index, onDelete }) {
             disabled={deleting}
             whileHover={{ y: -2, x: -2, boxShadow: `5px 5px 0 ${C.ink}` }}
             whileTap={{ y: 1, x: 1, boxShadow: `2px 2px 0 ${C.ink}` }}
-            title={confirm ? 'Click again to confirm delete' : 'Delete poll'}
-            style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem', background: confirm ? C.blaze : C.paper, color: confirm ? C.paper : C.ink, border: `2px solid ${C.ink}`, boxShadow: `3px 3px 0 ${C.ink}`, padding: '8px 12px', cursor: deleting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5, transition: 'background 0.2s, color 0.2s' }}
+            title={confirmDelete ? 'Click again to confirm delete' : 'Delete poll'}
+            style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem', background: confirmDelete ? C.blaze : C.paper, color: confirmDelete ? C.paper : C.ink, border: `2px solid ${C.ink}`, boxShadow: `3px 3px 0 ${C.ink}`, padding: '8px 12px', cursor: deleting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5, transition: 'background 0.2s, color 0.2s' }}
           >
             {deleting
               ? <div style={{ width: 14, height: 14, border: `2px solid ${C.paper}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
@@ -119,7 +134,7 @@ function PollCard({ poll, index, onDelete }) {
           </motion.button>
         </div>
 
-        {confirm && !deleting && (
+        {confirmDelete && !deleting && (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.75rem', color: C.blaze, marginTop: -6 }}>
             Click delete again to confirm

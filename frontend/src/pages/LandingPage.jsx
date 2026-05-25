@@ -337,9 +337,10 @@ function LandingNav() {
           <span style={{ ...font(800, "1.3rem"), color: C.ink, letterSpacing: "-0.02em" }}>PollFlow</span>
         </Link>
         <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-          {["Features", "Pricing", "Docs"].map(l => (
-            <motion.a key={l} href="#" whileHover={{ y: -2 }}
-              style={{ ...font(600, "0.9rem"), color: C.ink, textDecoration: "none", padding: "6px 14px" }}>{l}</motion.a>
+          {[{ label: "Features", href: "#features" }, { label: "Pricing", href: "#pricing" }, { label: "How It Works", href: "#steps" }].map(l => (
+            <motion.a key={l.label} href={l.href} whileHover={{ y: -2 }}
+              onClick={(e) => { e.preventDefault(); document.querySelector(l.href)?.scrollIntoView({ behavior: 'smooth' }); }}
+              style={{ ...font(600, "0.9rem"), color: C.ink, textDecoration: "none", padding: "6px 14px" }}>{l.label}</motion.a>
           ))}
           <Link to="/register" style={{ textDecoration: "none", marginLeft: 8 }}>
             <motion.button whileHover={{ y: -2, x: -2, boxShadow: `6px 6px 0 ${C.ink}` }} whileTap={{ y: 2, x: 2, boxShadow: `2px 2px 0 ${C.ink}` }}
@@ -475,7 +476,7 @@ const STEPS = [
 ];
 function Steps() {
   return (
-    <section style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
+    <section id="steps" style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
@@ -515,7 +516,7 @@ const PLANS = [
 ];
 function Pricing() {
   return (
-    <section style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
+    <section id="pricing" style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
