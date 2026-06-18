@@ -13,7 +13,13 @@ router.post('/', auth, async (req, res) => {
     if (!questions || questions.length === 0)
       return res.status(400).json({ msg: 'A poll must have at least one question' });
 
-    const poll = await Poll.create({ title: title.trim(), creator: req.user.id, questions, isAnonymous, expiresAt });
+    const poll = await Poll.create({
+      title: title.trim(),
+      creator: req.user.id,
+      questions,
+      isAnonymous,
+      expiresAt,
+    });
     res.status(201).json(poll);
   } catch (err) {
     console.error('Create poll error:', err.message);
@@ -32,18 +38,10 @@ router.get('/my-polls', auth, async (req, res) => {
   }
 });
 
-/* ── Get single poll ──────────────────────────────────────── */
-router.get('/:id', async (req, res) => {
-  try {
-    const poll = await Poll.findById(req.params.id);
-    if (!poll) return res.status(404).json({ msg: 'Poll not found' });
-    res.json(poll);
-  } catch (err) {
-    console.error('Get poll error:', err.message);
-    if (err.name === 'CastError') return res.status(404).json({ msg: 'Poll not found' });
-    res.status(500).json({ msg: 'Server error' });
-  }
-});
+/* ── IMPORTANT: specific routes must come BEFORE /:id ──────
+   PUT /:id/publish must be before PUT /:id
+   otherwise Express matches /:id first and "publish" becomes the id
+─────────────────────────────────────────────────────────── */
 
 /* ── Publish results ──────────────────────────────────────── */
 router.put('/:id/publish', auth, async (req, res) => {
@@ -62,6 +60,19 @@ router.put('/:id/publish', auth, async (req, res) => {
   }
 });
 
+/* ── Get single poll ──────────────────────────────────────── */
+router.get('/:id', async (req, res) => {
+  try {
+    const poll = await Poll.findById(req.params.id);
+    if (!poll) return res.status(404).json({ msg: 'Poll not found' });
+    res.json(poll);
+  } catch (err) {
+    console.error('Get poll error:', err.message);
+    if (err.name === 'CastError') return res.status(404).json({ msg: 'Poll not found' });
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 /* ── Edit poll ────────────────────────────────────────────── */
 router.put('/:id', auth, async (req, res) => {
   try {
@@ -75,7 +86,12 @@ router.put('/:id', auth, async (req, res) => {
 
     const updated = await Poll.findByIdAndUpdate(
       req.params.id,
-      { title: title || poll.title, questions, isAnonymous: isAnonymous ?? poll.isAnonymous, expiresAt: expiresAt || poll.expiresAt },
+      {
+        title: title || poll.title,
+        questions,
+        isAnonymous: isAnonymous ?? poll.isAnonymous,
+        expiresAt: expiresAt || poll.expiresAt,
+      },
       { new: true, runValidators: true }
     );
     res.json(updated);
