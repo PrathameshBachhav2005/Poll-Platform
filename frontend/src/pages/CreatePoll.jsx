@@ -87,7 +87,7 @@ export default function CreatePoll() {
     e.preventDefault();
     setSubmitting(true); setError('');
     try {
-      await api.post('https://poll-platformbackend.vercel.app/polls', { title, expiresAt, isAnonymous, questions });
+      await api.post('/polls', { title, expiresAt, isAnonymous, questions });
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.msg || 'Failed to create poll');

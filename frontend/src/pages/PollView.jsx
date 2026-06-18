@@ -7,7 +7,8 @@ import { io } from "socket.io-client";
 import { Clock, AlertCircle, CheckCircle, ArrowRight, Lock, BarChart3, TimerOff } from "lucide-react";
 
 const C = { ink: "#0d0d0d", paper: "#f5f0e8", blaze: "#ff4d1c", volt: "#e8ff00" };
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5001";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
+  || 'https://poll-platformbackend-6y4fnk7e0-prathamesh-bachhavs-projects.vercel.app';
 
 function msLeft(expiresAt) { return new Date(expiresAt) - Date.now(); }
 function fmtCountdown(ms) {

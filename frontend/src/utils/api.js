@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// In development:  set VITE_API_URL in frontend/.env.local → http://localhost:5001/api
-// In production:   set VITE_API_URL in your deployment env → https://your-backend.onrender.com/api
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+// ── Backend URL ──────────────────────────────────────────────
+// Development: http://localhost:5001/api
+// Production:  your Vercel backend URL
+const BASE_URL = import.meta.env.VITE_API_URL
+  || 'https://poll-platformbackend-6y4fnk7e0-prathamesh-bachhavs-projects.vercel.app/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000, // 15 s — prevents hanging requests on slow platforms
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -17,12 +19,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Global response error logging (optional — helps debug deployment issues)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out — is the backend running?');
+      console.error('Request timed out — backend not responding');
     }
     return Promise.reject(error);
   }
