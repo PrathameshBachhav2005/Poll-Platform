@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-// ── Backend URL ──────────────────────────────────────────────
-// Development: http://localhost:5001/api
-// Production:  your Vercel backend URL
+// Production backend URL (Vercel)
 const BASE_URL = import.meta.env.VITE_API_URL
-  || 'https://poll-platformbackend-6y4fnk7e0-prathamesh-bachhavs-projects.vercel.app/api';
+  || 'https://poll-platform-backend.vercel.app/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
