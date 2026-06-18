@@ -11,6 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'https://poll-platform-frontend-six.vercel.app',
     'https://poll-platform-frontend01.vercel.app',
   ],
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],

@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-// Production backend URL (Vercel)
+// Backend URL — Render deployment
 const BASE_URL = import.meta.env.VITE_API_URL
-  || 'https://poll-platform-backend.vercel.app/api';
+  || 'https://poll-platform-hyo6.onrender.com/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 30000, // 30s — Render free tier cold start takes time
 });
 
 api.interceptors.request.use((config) => {
@@ -21,7 +21,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out — backend not responding');
+      console.error('Request timed out — backend is waking up, please retry');
     }
     return Promise.reject(error);
   }
