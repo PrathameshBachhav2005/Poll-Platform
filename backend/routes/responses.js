@@ -25,7 +25,7 @@ router.post('/:pollId', async (req, res) => {
     const poll = await Poll.findById(pollId);
     if (!poll) return res.status(404).json({ msg: 'Poll not found' });
     if (new Date() > new Date(poll.expiresAt))
-      return res.status(400).json({ msg: 'This poll has expired' });
+      return res.status(410).json({ msg: 'The deadline is over. You are too late to vote.' });
 
     // Validate mandatory questions
     for (let i = 0; i < poll.questions.length; i++) {
