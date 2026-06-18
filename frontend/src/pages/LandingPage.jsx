@@ -337,7 +337,7 @@ function LandingNav() {
           <span style={{ ...font(800, "1.3rem"), color: C.ink, letterSpacing: "-0.02em" }}>PollFlow</span>
         </Link>
         <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-          {[{ label: "Features", href: "#features" }, { label: "Pricing", href: "#pricing" }, { label: "How It Works", href: "#steps" }].map(l => (
+          {[{ label: "Features", href: "#features" },  { label: "How It Works", href: "#steps" }].map(l => (
             <motion.a key={l.label} href={l.href} whileHover={{ y: -2 }}
               onClick={(e) => { e.preventDefault(); document.querySelector(l.href)?.scrollIntoView({ behavior: 'smooth' }); }}
               style={{ ...font(600, "0.9rem"), color: C.ink, textDecoration: "none", padding: "6px 14px" }}>{l.label}</motion.a>
@@ -405,9 +405,9 @@ function Hero() {
           </Reveal>
           <Reveal delay={0.75}>
             <div style={{ display: "flex", gap: 40, marginTop: 52, paddingTop: 32, borderTop: `2px solid ${C.ink}`, flexWrap: "wrap" }}>
-              <Stat value={48000} suffix="+" label="Polls created" />
-              <Stat value={2400000} suffix="+" label="Votes cast" />
-              <Stat value={99.9} suffix="%" label="Uptime SLA" />
+              <Stat value={13556} suffix="+" label="Polls created" />
+              <Stat value={241400} suffix="+" label="Votes cast" />
+              {/* <Stat value={91.9} suffix="%" label="Uptime SLA" /> */}
             </div>
           </Reveal>
         </div>
@@ -470,9 +470,12 @@ function BentoFeatures() {
 
 /* ── Steps ───────────────────────────────────────────────── */
 const STEPS = [
-  { num: "01", title: "Create your poll", desc: "Pick a question, add up to 10 options, set a deadline. Done in under 60 seconds." },
-  { num: "02", title: "Share the link", desc: "One URL. Works on any device. No app download, no account required for voters.", diamond: true },
-  { num: "03", title: "Watch results live", desc: "Real-time bar charts update as votes roll in. Export to CSV or embed anywhere." },
+  { num: "01", title: "Create Account", desc: "registeration is mandatory for all people." },
+  { num: "03", title: "Create your poll", desc: "Pick a question, add up to 10 options, set a deadline. Done in under 60 seconds." },
+  { num: "02", title: "Share the link", desc: "One URL. Works on any device. No app download.", diamond: true },
+  { num: "04", title: "Edit the live poll", desc: "The real-time poll is edit anywhere." },
+  { num: "05", title: "delete the poll", desc: "delete poll anywhere or anytime." },
+  { num: "06", title: "Watch results live", desc: "Real-time bar charts update as votes roll." },
 ];
 function Steps() {
   return (
@@ -481,7 +484,7 @@ function Steps() {
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
             <span style={{ ...font(800, "0.75rem"), letterSpacing: "0.12em", textTransform: "uppercase", color: C.ink, opacity: 0.45 }}>How it works</span>
-            <h2 style={{ ...font(800, "clamp(2rem,4vw,3rem)"), color: C.ink, lineHeight: 1.1, marginTop: 8 }}>Three steps.<br />Zero friction.</h2>
+            <h2 style={{ ...font(800, "clamp(2rem,4vw,3rem)"), color: C.ink, lineHeight: 1.1, marginTop: 8 }}>There are some steps.<br />Zero friction.</h2>
           </div>
         </Reveal>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
@@ -508,77 +511,77 @@ function Steps() {
   );
 }
 
-/* ── Pricing ─────────────────────────────────────────────── */
-const PLANS = [
-  { name: "Free", price: "$0", period: "forever", desc: "Perfect for trying things out.", features: ["5 polls / month", "100 responses / poll", "Basic analytics", "Public polls only"], cta: "Get started", bg: C.paper, featured: false },
-  { name: "Pro", price: "$12", period: "/ month", desc: "For creators who mean business.", features: ["Unlimited polls", "10,000 responses / poll", "Advanced analytics", "Private polls", "Custom branding", "Priority support"], cta: "Start Pro trial", bg: C.blaze, featured: true },
-  { name: "Team", price: "$48", period: "/ month", desc: "For teams that move fast together.", features: ["Everything in Pro", "Up to 10 seats", "Team workspaces", "SSO / SAML", "Audit logs", "Dedicated CSM"], cta: "Contact sales", bg: C.ink, featured: false },
-];
-function Pricing() {
-  return (
-    <section id="pricing" style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-        <Reveal>
-          <div style={{ textAlign: "center", marginBottom: 64 }}>
-            <span style={{ ...font(800, "0.75rem"), letterSpacing: "0.12em", textTransform: "uppercase", color: C.ink, opacity: 0.45 }}>Pricing</span>
-            <h2 style={{ ...font(800, "clamp(2rem,4vw,3rem)"), color: C.ink, lineHeight: 1.1, marginTop: 8 }}>Simple pricing.<br />No surprises.</h2>
-          </div>
-        </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, alignItems: "end" }}>
-          {PLANS.map((plan, i) => {
-            const tc = plan.bg === C.ink || plan.bg === C.blaze ? C.paper : C.ink;
-            const sc = plan.bg === C.ink ? "rgba(245,240,232,0.6)" : "rgba(13,13,13,0.5)";
-            const btnBg = plan.bg === C.blaze ? C.paper : plan.bg === C.ink ? C.volt : C.ink;
-            const btnColor = plan.bg === C.blaze ? C.blaze : plan.bg === C.ink ? C.ink : C.paper;
-            const btnBorder = plan.bg === C.ink ? C.volt : C.ink;
-            return (
-              <Reveal key={plan.name} delay={i * 0.1}>
-                <motion.div whileHover={{ y: plan.featured ? -12 : -6, x: -2 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  style={{ background: plan.bg, border: `2px solid ${C.ink}`, boxShadow: plan.featured ? bs(8) : bs(), padding: "36px 28px", position: "relative", transform: plan.featured ? "translateY(-16px)" : "none" }}>
-                  {plan.featured && (
-                    <motion.div animate={{ rotate: [-2, 2, -2] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      style={{ position: "absolute", top: -18, left: "50%", transform: "translateX(-50%)", background: C.volt, color: C.ink, border: `2px solid ${C.ink}`, boxShadow: bs(3), padding: "4px 14px", ...font(800, "0.75rem"), whiteSpace: "nowrap" }}>
-                      Most picked
-                    </motion.div>
-                  )}
-                  <p style={{ ...font(800, "0.8rem"), letterSpacing: "0.1em", textTransform: "uppercase", color: tc, opacity: 0.5, marginBottom: 8 }}>{plan.name}</p>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 8 }}>
-                    <span style={{ ...font(800, "clamp(2.5rem,5vw,3.5rem)"), color: tc, lineHeight: 1 }}>{plan.price}</span>
-                    <span style={{ ...font(600, "0.9rem"), color: sc }}>{plan.period}</span>
-                  </div>
-                  <p style={{ fontSize: "0.9rem", color: sc, marginBottom: 24, lineHeight: 1.5 }}>{plan.desc}</p>
-                  <ul style={{ listStyle: "none", padding: 0, marginBottom: 28 }}>
-                    {plan.features.map((f, fi) => (
-                      <motion.li key={f} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: fi * 0.06 + i * 0.1 }}
-                        style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <div style={{ width: 20, height: 20, flexShrink: 0, background: plan.bg === C.blaze ? C.paper : plan.bg === C.ink ? C.volt : C.blaze, border: `1.5px solid ${plan.bg === C.ink ? C.volt : C.ink}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <Check size={11} color={plan.bg === C.blaze ? C.blaze : plan.bg === C.ink ? C.ink : C.paper} strokeWidth={3} />
-                        </div>
-                        <span style={{ fontSize: "0.88rem", color: plan.bg === C.ink ? "rgba(245,240,232,0.85)" : "rgba(13,13,13,0.75)", fontWeight: 500 }}>{f}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                  <Link to="/register" style={{ textDecoration: "none", display: "block" }}>
-                    <motion.button whileHover={{ y: -2, x: -2, boxShadow: `6px 6px 0 ${btnBorder}` }} whileTap={{ y: 2, x: 2, boxShadow: `2px 2px 0 ${btnBorder}` }}
-                      style={{ width: "100%", ...font(800, "0.95rem"), background: btnBg, color: btnColor, border: `2px solid ${btnBorder}`, boxShadow: `4px 4px 0 ${btnBorder}`, padding: "12px 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                      {plan.cta} <ArrowRight size={16} />
-                    </motion.button>
-                  </Link>
-                </motion.div>
-              </Reveal>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
+// /* ── Pricing ─────────────────────────────────────────────── */
+// const PLANS = [
+//   { name: "Free", price: "$0", period: "forever", desc: "Perfect for trying things out.", features: ["5 polls / month", "100 responses / poll", "Basic analytics", "Public polls only"], cta: "Get started", bg: C.paper, featured: false },
+//   { name: "Pro", price: "$12", period: "/ month", desc: "For creators who mean business.", features: ["Unlimited polls", "10,000 responses / poll", "Advanced analytics", "Private polls", "Custom branding", "Priority support"], cta: "Start Pro trial", bg: C.blaze, featured: true },
+//   { name: "Team", price: "$48", period: "/ month", desc: "For teams that move fast together.", features: ["Everything in Pro", "Up to 10 seats", "Team workspaces", "SSO / SAML", "Audit logs", "Dedicated CSM"], cta: "Contact sales", bg: C.ink, featured: false },
+// ];
+// function Pricing() {
+//   return (
+//     <section id="pricing" style={{ padding: "100px 0", background: C.paper, borderTop: `2px solid ${C.ink}` }}>
+//       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+//         <Reveal>
+//           <div style={{ textAlign: "center", marginBottom: 64 }}>
+//             <span style={{ ...font(800, "0.75rem"), letterSpacing: "0.12em", textTransform: "uppercase", color: C.ink, opacity: 0.45 }}>Pricing</span>
+//             <h2 style={{ ...font(800, "clamp(2rem,4vw,3rem)"), color: C.ink, lineHeight: 1.1, marginTop: 8 }}>Simple pricing.<br />No surprises.</h2>
+//           </div>
+//         </Reveal>
+//         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, alignItems: "end" }}>
+//           {PLANS.map((plan, i) => {
+//             const tc = plan.bg === C.ink || plan.bg === C.blaze ? C.paper : C.ink;
+//             const sc = plan.bg === C.ink ? "rgba(245,240,232,0.6)" : "rgba(13,13,13,0.5)";
+//             const btnBg = plan.bg === C.blaze ? C.paper : plan.bg === C.ink ? C.volt : C.ink;
+//             const btnColor = plan.bg === C.blaze ? C.blaze : plan.bg === C.ink ? C.ink : C.paper;
+//             const btnBorder = plan.bg === C.ink ? C.volt : C.ink;
+//             return (
+//               <Reveal key={plan.name} delay={i * 0.1}>
+//                 <motion.div whileHover={{ y: plan.featured ? -12 : -6, x: -2 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}
+//                   style={{ background: plan.bg, border: `2px solid ${C.ink}`, boxShadow: plan.featured ? bs(8) : bs(), padding: "36px 28px", position: "relative", transform: plan.featured ? "translateY(-16px)" : "none" }}>
+//                   {plan.featured && (
+//                     <motion.div animate={{ rotate: [-2, 2, -2] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+//                       style={{ position: "absolute", top: -18, left: "50%", transform: "translateX(-50%)", background: C.volt, color: C.ink, border: `2px solid ${C.ink}`, boxShadow: bs(3), padding: "4px 14px", ...font(800, "0.75rem"), whiteSpace: "nowrap" }}>
+//                       Most picked
+//                     </motion.div>
+//                   )}
+//                   <p style={{ ...font(800, "0.8rem"), letterSpacing: "0.1em", textTransform: "uppercase", color: tc, opacity: 0.5, marginBottom: 8 }}>{plan.name}</p>
+//                   <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 8 }}>
+//                     <span style={{ ...font(800, "clamp(2.5rem,5vw,3.5rem)"), color: tc, lineHeight: 1 }}>{plan.price}</span>
+//                     <span style={{ ...font(600, "0.9rem"), color: sc }}>{plan.period}</span>
+//                   </div>
+//                   <p style={{ fontSize: "0.9rem", color: sc, marginBottom: 24, lineHeight: 1.5 }}>{plan.desc}</p>
+//                   <ul style={{ listStyle: "none", padding: 0, marginBottom: 28 }}>
+//                     {plan.features.map((f, fi) => (
+//                       <motion.li key={f} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: fi * 0.06 + i * 0.1 }}
+//                         style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+//                         <div style={{ width: 20, height: 20, flexShrink: 0, background: plan.bg === C.blaze ? C.paper : plan.bg === C.ink ? C.volt : C.blaze, border: `1.5px solid ${plan.bg === C.ink ? C.volt : C.ink}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+//                           <Check size={11} color={plan.bg === C.blaze ? C.blaze : plan.bg === C.ink ? C.ink : C.paper} strokeWidth={3} />
+//                         </div>
+//                         <span style={{ fontSize: "0.88rem", color: plan.bg === C.ink ? "rgba(245,240,232,0.85)" : "rgba(13,13,13,0.75)", fontWeight: 500 }}>{f}</span>
+//                       </motion.li>
+//                     ))}
+//                   </ul>
+//                   <Link to="/register" style={{ textDecoration: "none", display: "block" }}>
+//                     <motion.button whileHover={{ y: -2, x: -2, boxShadow: `6px 6px 0 ${btnBorder}` }} whileTap={{ y: 2, x: 2, boxShadow: `2px 2px 0 ${btnBorder}` }}
+//                       style={{ width: "100%", ...font(800, "0.95rem"), background: btnBg, color: btnColor, border: `2px solid ${btnBorder}`, boxShadow: `4px 4px 0 ${btnBorder}`, padding: "12px 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+//                       {plan.cta} <ArrowRight size={16} />
+//                     </motion.button>
+//                   </Link>
+//                 </motion.div>
+//               </Reveal>
+//             );
+//           })}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
 
 /* ── Footer ──────────────────────────────────────────────── */
 function Footer() {
   const [blink, setBlink] = useState(true);
   useEffect(() => { const iv = setInterval(() => setBlink(b => !b), 900); return () => clearInterval(iv); }, []);
-  const marqueeText = Array(8).fill("Vote Loud  PollFlow ✦").join("  ");
+  const marqueeText = Array(6).fill("Real-Time Polling Platform ↗️✦").join("  ");
   return (
     <footer style={{ background: C.ink, borderTop: `2px solid ${C.ink}` }}>
       <div style={{ borderBottom: "1px solid rgba(245,240,232,0.12)", overflow: "hidden", padding: "20px 0" }}>
@@ -606,18 +609,19 @@ function Footer() {
               <span style={{ ...font(600, "0.78rem"), color: "rgba(245,240,232,0.5)" }}>All systems operational</span>
             </div>
           </div>
-          <FooterCol title="Product" links={["Features", "Pricing", "Changelog", "Roadmap"]} />
-          <FooterCol title="Company" links={["About", "Blog", "Careers", "Press"]} />
-          <FooterCol title="Legal" links={["Privacy", "Terms", "Security", "GDPR"]} />
-        </div>
-        <div style={{ borderTop: "1px solid rgba(245,240,232,0.1)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <span style={{ ...font(600, "0.82rem"), color: "rgba(245,240,232,0.35)" }}>2026 PollFlow Inc. All rights reserved.</span>
+             <div style={{ paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <span style={{ ...font(600, "0.82rem"), color: "rgba(245,240,232,0.35)" }}> ©2026 Made with ❤️ and React by Prathamesh</span>
           <div style={{ display: "flex", gap: 20 }}>
-            {["Twitter", "GitHub", "Discord"].map(s => (
-              <motion.a key={s} href="#" whileHover={{ x: 4, color: C.volt }}
-                style={{ ...font(600, "0.82rem"), color: "rgba(245,240,232,0.35)", textDecoration: "none" }}>{s}</motion.a>
-            ))}
+           
+              
+              <motion.a  href="https://x.com/Prathmesh13355" target="_blank" whileHover={{ x: 4, color: C.volt }}
+                style={{ ...font(600, "0.82rem"), color: "rgba(245,240,232,0.35)", textDecoration: "none" }}>Twitter</motion.a>
+              
+              <motion.a  href="https://www.linkedin.com/in/prathamesh-bachhav13355" target="_blank" whileHover={{ x: 4, color: C.volt }}
+                style={{ ...font(600, "0.82rem"), color: "rgba(245,240,232,0.35)", textDecoration: "none" }}>Linkedin</motion.a>
+          
           </div>
+        </div>
         </div>
       </div>
     </footer>
@@ -643,7 +647,7 @@ export default function LandingPage() {
       <BentoFeatures />
       <InteractivePoll />
       <Steps />
-      <Pricing />
+      {/* <Pricing /> */}
       <Footer />
     </div>
   );

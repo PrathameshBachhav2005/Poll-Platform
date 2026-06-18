@@ -72,7 +72,6 @@ export default function Navbar() {
           {user ? (
             <>
               <NavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</NavLink>
-              <NavLink to="/create"    icon={Plus}>New Poll</NavLink>
               <motion.button
                 onClick={handleLogout}
                 whileHover={{ y: -2, x: -2, boxShadow: `5px 5px 0 ${C.ink}` }}
