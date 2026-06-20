@@ -7,8 +7,7 @@ import { io } from "socket.io-client";
 import { Activity, Clock, BarChart3, Plus, Copy, Check, Trash2, AlertCircle, Pencil } from "lucide-react";
 
 const C = { ink: "#0d0d0d", paper: "#f5f0e8", blaze: "#ff4d1c", volt: "#e8ff00" };
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
-  || 'https://poll-platform-hyo6.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5001";
 
 /* ── Re-render tick every 30 s so cards move between Active/Expired in real time ── */
 function useNow(intervalMs = 30_000) {

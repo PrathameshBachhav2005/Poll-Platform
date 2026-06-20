@@ -1,128 +1,130 @@
-﻿const express  = require("express");
-const mongoose = require("mongoose");
-const cors     = require("cors");
-const dotenv   = require("dotenv");
+﻿const express    = require('express');
+const mongoose   = require('mongoose');
+const cors       = require('cors');
+const dotenv     = require('dotenv');
+const http       = require('http');
+const { Server } = require('socket.io');
 
 dotenv.config();
 
-const app = express();
+const app    = express();
+const server = http.createServer(app);
 
-/* ── CORS ─────────────────────────────────────────────────── */
+// ── Socket.IO ────────────────────────────────────────────────
+const io = new Server(server, {
+  cors: { origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'] },
+});
+
+app.get("/about", (req, res) => {
+    res.send("About Page for poll platform");
+});
+
+// ── Middleware ───────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://poll-platform-frontend-six.vercel.app',
-    'https://poll-platform-frontend01.vercel.app',
-  ],
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
-  credentials: true,
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
+app.set('io', io);
 
-/* ── DB (lazy, cached, safe for serverless) ──────────────── */
-let dbConn = null;
-
-async function connectDB() {
-  if (dbConn && mongoose.connection.readyState === 1) return;
-
-  const uri = process.env.MONGO_URI;
-  if (!uri) throw new Error("MONGO_URI environment variable is not set");
-
-  dbConn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 8000 });
-  console.log("MongoDB connected");
-}
-
-/* ── DB guard middleware ──────────────────────────────────── */
-app.use(async (req, res, next) => {
-  if (req.path === "/api/health") return next();
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("DB error:", err.message);
-    res.status(503).json({ msg: "Database unavailable. Set MONGO_URI on Vercel." });
-  }
-});
-
-/* ── Health check ─────────────────────────────────────────── */
-app.get("/", (req, res) => {
-  res.json({ msg: "PollFlow API is running", version: "1.0.0" });
-});
-
-app.get("/api/health", (req, res) => {
+// ── Routes (registered BEFORE DB so the server can boot) ────
+app.get('/api/health', (req, res) => {
   res.json({
-    status: "ok",
-    db:   mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    status: 'ok',
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     time: new Date().toISOString(),
   });
 });
 
-/* ── API Routes ───────────────────────────────────────────── */
-app.use("/api/auth",      require("./routes/auth"));
-app.use("/api/polls",     require("./routes/polls"));
-app.use("/api/responses", require("./routes/responses"));
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/polls',     require('./routes/polls'));
+app.use('/api/responses', require('./routes/responses'));
 
-/* ── 404 ──────────────────────────────────────────────────── */
+// ── 404 — must be AFTER all routes ──────────────────────────
 app.use((req, res) => {
-  res.status(404).json({ msg: "Route not found: " + req.method + " " + req.originalUrl });
+  res.status(404).json({ msg: `Route not found: ${req.method} ${req.originalUrl}` });
 });
 
-/* ── Error handler ────────────────────────────────────────── */
+// ── Global error handler ─────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
-  res.status(500).json({ msg: "Internal server error" });
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ msg: 'Internal server error' });
 });
 
-/* ── Local / non-serverless startup ──────────────────────── */
-if (!process.env.VERCEL) {
-  const http       = require("http");
-  const { Server } = require("socket.io");
-  const server     = http.createServer(app);
+// ── Socket events ────────────────────────────────────────────
+io.on('connection', (socket) => {
+  console.log('🔌 Client connected:', socket.id);
 
-  const io = new Server(server, {
-    cors: { origin: "*", methods: ["GET","POST","PUT","DELETE"] },
+  socket.on('join_poll',      (pollId) => { socket.join(pollId); });
+  socket.on('leave_poll',     (pollId) => { socket.leave(pollId); });
+  socket.on('join_user_room', (userId) => { socket.join(`user:${userId}`); });
+  socket.on('leave_user_room',(userId) => { socket.leave(`user:${userId}`); });
+
+  socket.on('disconnect', () => {
+    console.log('🔌 Client disconnected:', socket.id);
   });
+});
 
-  app.set("io", io);
+// ── Poll expiration scheduler ────────────────────────────────
+function startExpirationScheduler() {
+  const Poll = require('./models/Poll');
+  const firedSet = new Set();
 
-  io.on("connection", (socket) => {
-    socket.on("join_poll",       (id) => socket.join(id));
-    socket.on("leave_poll",      (id) => socket.leave(id));
-    socket.on("join_user_room",  (id) => socket.join("user:" + id));
-    socket.on("leave_user_room", (id) => socket.leave("user:" + id));
-    socket.on("disconnect",      ()  => {});
-  });
+  const checkExpired = async () => {
+    try {
+      const now = new Date();
+      const recentlyExpired = await Poll.find({
+        expiresAt: { $lte: now, $gt: new Date(now - 35_000) },
+      }).select('_id creator');
 
-  const PORT = parseInt(process.env.PORT, 10) || 5001;
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log("Server running on port " + PORT);
-  });
+      for (const poll of recentlyExpired) {
+        const key = poll._id.toString();
+        if (firedSet.has(key)) continue;
+        firedSet.add(key);
+        io.to(key).emit('poll_expired', { pollId: key });
+        io.to(`user:${poll.creator.toString()}`).emit('dashboard_poll_expired', { pollId: key });
+        console.log(`⏰ Poll ${key} expired — notified`);
+      }
 
-  /* Poll expiration scheduler */
-  connectDB().then(() => {
-    const Poll     = require("./models/Poll");
-    const fired    = new Set();
-    const tick = async () => {
-      try {
-        const now = new Date();
-        const expired = await Poll.find({
-          expiresAt: { $lte: now, $gt: new Date(now - 35000) },
-        }).select("_id creator");
-        for (const p of expired) {
-          const k = p._id.toString();
-          if (fired.has(k)) continue;
-          fired.add(k);
-          io.to(k).emit("poll_expired",           { pollId: k });
-          io.to("user:" + p.creator).emit("dashboard_poll_expired", { pollId: k });
-        }
-        if (fired.size > 5000) fired.clear();
-      } catch (e) { console.error("Scheduler:", e.message); }
-    };
-    tick();
-    setInterval(tick, 30000);
-  }).catch(() => {});
+      if (firedSet.size > 5000) firedSet.clear();
+    } catch (err) {
+      console.error('Expiration scheduler error:', err.message);
+    }
+  };
+
+  checkExpired();
+  setInterval(checkExpired, 30_000);
 }
 
-/* ── Export for Vercel ────────────────────────────────────── */
-module.exports = app;
+// ── Database connection ──────────────────────────────────────
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error('❌ MONGO_URI environment variable is not set!');
+  process.exit(1);
+}
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    startExpirationScheduler();
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection failed:', err.message);
+    process.exit(1);
+  });
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB runtime error:', err.message);
+});
+
+// ── Start server ─────────────────────────────────────────────
+// Bind to 0.0.0.0 so it works on all deployment platforms
+const PORT = parseInt(process.env.PORT, 10) || 5001;
+const HOST = '0.0.0.0';
+
+server.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+});

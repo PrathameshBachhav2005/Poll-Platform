@@ -15,8 +15,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const C = { ink: '#0d0d0d', paper: '#f5f0e8', blaze: '#ff4d1c', volt: '#e8ff00' };
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
-  || 'https://poll-platform-hyo6.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
 
 const CHART_COLORS = [
   { bg: 'rgba(255,77,28,0.75)',  border: '#ff4d1c' },

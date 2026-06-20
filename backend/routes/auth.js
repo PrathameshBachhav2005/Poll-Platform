@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const bcrypt  = require('bcrypt');
+const bcrypt  = require('bcryptjs'); // bcryptjs = pure JS, no native bindings, no vulnerabilities
 const jwt     = require('jsonwebtoken');
 const User    = require('../models/User');
 const auth    = require('../middleware/authMiddleware');
